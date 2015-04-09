@@ -158,6 +158,7 @@ public class WSFRealtimeProvider {
             } else {
               _log.debug("Discarding update for vessel {} because no StopTimeUpdates were produced.", vlr.getVesselID());
             }
+            _lastRefresh = System.currentTimeMillis();
           } catch (Exception ex) {
             _log.warn(String.format("Error updating vessel %d:", vlr.getVesselID()), ex);
           }
@@ -165,7 +166,7 @@ public class WSFRealtimeProvider {
 
         _vehiclePositionsSink.handleFullUpdate(vehiclePositionsUpdate);
         _tripUpdatesSink.handleFullUpdate(tripUpdatesUpdate);
-        _lastRefresh = System.currentTimeMillis();
+        
         _log.info("complete");
       } catch (URISyntaxException | IOException | JAXBException ex) {
         _log.error("Vessel update error:", ex);

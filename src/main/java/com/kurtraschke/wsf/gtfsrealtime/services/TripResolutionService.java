@@ -99,7 +99,11 @@ public class TripResolutionService {
             .iterator();
 
     try {
-      return Iterators.getOnlyElement(activatedTrips);
+      if (activatedTrips.hasNext()) {
+        return Iterators.getOnlyElement(activatedTrips);
+      }
+      _log.warn("no trip found for resolve(departId=" + departingTerminalId + ", departureTime=" + departureTime + ", arrivalId=" + arrivingTerminalId + ")");
+      return null;
     } catch (NoSuchElementException | IllegalArgumentException ex) {
       _log.warn("Failed to resolve trip:", ex);
       return null;
