@@ -62,6 +62,9 @@ public class WSFRealtimeProvider {
   private ScheduledExecutorService _executor;
 
   @Inject
+  private ScheduledExecutorService _monitor;
+  
+  @Inject
   @VehiclePositions
   private GtfsRealtimeSink _vehiclePositionsSink;
 
@@ -90,17 +93,29 @@ public class WSFRealtimeProvider {
   private static final float KNOT_TO_KM_H = 1.852f;
 
   private static final float KM_H_TO_M_S = 1000f / 3600f;
+  
+  private long _lastRefresh = 0;
 
   @PostConstruct
   public void start() {
     _log.info("Starting GTFS-realtime service");
+    startExecutor();
+    _monitor.scheduleWithFixedDelay(new MonitorTask(), (_vesselRefreshInterval * 2) + 1, _vesselRefreshInterval, TimeUnit.SECONDS);
+  }
+
+  private void startExecutor() {
     _executor.scheduleWithFixedDelay(new VesselRefreshTask(), 0, _vesselRefreshInterval, TimeUnit.SECONDS);
   }
 
+  private void stopExecutor() {
+    _executor.shutdownNow();
+  }
   @PreDestroy
   public void stop() {
     _log.info("Stopping GTFS-realtime service");
-    _executor.shutdownNow();
+    _monitor.shutdownNow();
+    stopExecutor();
+    
   }
 
   private class VesselRefreshTask implements Runnable {
@@ -150,9 +165,12 @@ public class WSFRealtimeProvider {
 
         _vehiclePositionsSink.handleFullUpdate(vehiclePositionsUpdate);
         _tripUpdatesSink.handleFullUpdate(tripUpdatesUpdate);
-
+        _lastRefresh = System.currentTimeMillis();
+        _log.info("complete");
       } catch (URISyntaxException | IOException | JAXBException ex) {
         _log.error("Vessel update error:", ex);
+      } catch (Throwable t) {
+        _log.error("Vessel update failed in an unexpected fashion:", t);
       }
     }
 
@@ -260,4 +278,31 @@ public class WSFRealtimeProvider {
       return (gc.getTimeInMillis() / 1000L);
     }
   }
+  
+  private class MonitorTask implements Runnable {
+
+    @Override
+    public void run() {
+      long now = System.currentTimeMillis();
+      long delta = now - _lastRefresh;
+      _log.info("Monitor delta=" + delta + "ms");
+      
+      if (delta > ( 3 * _vesselRefreshInterval * 1000)) {
+        _log.error("Vessel API hung, restarting");
+        try {
+          stopExecutor();
+        } catch (Throwable t) {
+          // bury
+        }
+        
+        try {
+          startExecutor();
+        } catch (Throwable t) {
+          _log.error("issue restarting:", t);
+        }
+      }
+      
+    }
+  }
+  
 }
