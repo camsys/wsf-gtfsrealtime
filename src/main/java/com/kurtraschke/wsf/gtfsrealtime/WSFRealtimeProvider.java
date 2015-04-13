@@ -100,7 +100,7 @@ public class WSFRealtimeProvider {
   public void start() {
     _log.info("Starting GTFS-realtime service");
     startExecutor();
-    _monitor.scheduleWithFixedDelay(new MonitorTask(), (_vesselRefreshInterval * 2) + 1, _vesselRefreshInterval, TimeUnit.SECONDS);
+    _monitor.scheduleWithFixedDelay(new MonitorTask(), (_vesselRefreshInterval * 2) + 1, (_vesselRefreshInterval * 2)-1, TimeUnit.SECONDS);
   }
 
   private void startExecutor() {
@@ -123,12 +123,18 @@ public class WSFRealtimeProvider {
     @Override
     public void run() {
       _log.info("Refreshing vessels...");
+      int tripCount = 0;
       try {
         Iterable<VesselLocationResponse> allVessels = _vesselLocationService.getAllVessels();
 
         GtfsRealtimeFullUpdate vehiclePositionsUpdate = new GtfsRealtimeFullUpdate();
         GtfsRealtimeFullUpdate tripUpdatesUpdate = new GtfsRealtimeFullUpdate();
 
+        if (!allVessels.iterator().hasNext()) {
+          // if there are no vessels, we still need to mark the update as successful
+          _lastRefresh = System.currentTimeMillis();
+        }
+        
         for (VesselLocationResponse vlr : allVessels) {
           if (!vlr.isInService()) {
             _log.debug("Discarding update for vessel {} because vessel is not in service.", vlr.getVesselID());
@@ -154,6 +160,7 @@ public class WSFRealtimeProvider {
 
             FeedEntity tripUpdateFeedEntity = wrapTripUpdate(buildTripUpdate(vlr, vd, td));
             if (tripUpdateFeedEntity.getTripUpdate().getStopTimeUpdateCount() > 0) {
+              tripCount++;
               tripUpdatesUpdate.addEntity(tripUpdateFeedEntity);
             } else {
               _log.debug("Discarding update for vessel {} because no StopTimeUpdates were produced.", vlr.getVesselID());
@@ -167,7 +174,7 @@ public class WSFRealtimeProvider {
         _vehiclePositionsSink.handleFullUpdate(vehiclePositionsUpdate);
         _tripUpdatesSink.handleFullUpdate(tripUpdatesUpdate);
         
-        _log.info("complete");
+        _log.info("complete with " + tripCount + " trips");
       } catch (URISyntaxException | IOException | JAXBException ex) {
         _log.error("Vessel update error:", ex);
       } catch (Throwable t) {
@@ -288,19 +295,12 @@ public class WSFRealtimeProvider {
       long delta = now - _lastRefresh;
       _log.info("Monitor delta=" + delta + "ms");
       
+      // this assumes we are running as a service
+      // TODO this should be a configuration option
       if (delta > ( 3 * _vesselRefreshInterval * 1000)) {
-        _log.error("Vessel API hung, restarting");
-        try {
-          stopExecutor();
-        } catch (Throwable t) {
-          // bury
-        }
-        
-        try {
-          startExecutor();
-        } catch (Throwable t) {
-          _log.error("issue restarting:", t);
-        }
+        _log.error("Vessel API hung, exiting");
+        // simply exit, and have the service restart us
+        System.exit(1);
       }
       
     }

@@ -136,6 +136,10 @@ public class WSFRealtimeMain {
 
     _lifecycleService.start();
   }
+  
+  public void interrupt() {
+    _lifecycleService.stop();
+  }
 
   private <T> T getConfigurationValue(Class<T> type, String configurationKey) {
     try {
