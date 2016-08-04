@@ -1,0 +1,102 @@
+<xs:schema xmlns:tns="http://www.wsdot.wa.gov/ferries/schedule/" elementFormDefault="qualified" targetNamespace="http://www.wsdot.wa.gov/ferries/schedule/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" schemaLocation="serialization.xsd" />
+  <xs:complexType name="SchedResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ScheduleID" type="xs:int" />
+      <xs:element minOccurs="0" name="ScheduleName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ScheduleSeason" type="tns:Season" />
+      <xs:element minOccurs="0" name="SchedulePDFUrl" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ScheduleStart" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ScheduleEnd" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="AllRoutes" nillable="true" type="tns:ArrayOfInt" />
+      <xs:element minOccurs="0" name="TerminalCombos" nillable="true" type="tns:ArrayOfSchedTerminalCombo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SchedResponse" nillable="true" type="tns:SchedResponse" />
+  <xs:simpleType name="Season">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Spring" />
+      <xs:enumeration value="Summer" />
+      <xs:enumeration value="Fall" />
+      <xs:enumeration value="Winter" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Season" nillable="true" type="tns:Season" />
+  <xs:complexType name="ArrayOfInt">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="int" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfInt" nillable="true" type="tns:ArrayOfInt" />
+  <xs:complexType name="ArrayOfSchedTerminalCombo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SchedTerminalCombo" nillable="true" type="tns:SchedTerminalCombo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSchedTerminalCombo" nillable="true" type="tns:ArrayOfSchedTerminalCombo" />
+  <xs:complexType name="SchedTerminalCombo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DepartingTerminalID" type="xs:int" />
+      <xs:element minOccurs="0" name="DepartingTerminalName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ArrivingTerminalID" type="xs:int" />
+      <xs:element minOccurs="0" name="ArrivingTerminalName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SailingNotes" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Annotations" nillable="true" type="tns:ArrayOfString" />
+      <xs:element minOccurs="0" name="Times" nillable="true" type="tns:ArrayOfSchedTime" />
+      <xs:element minOccurs="0" name="AnnotationsIVR" nillable="true" type="tns:ArrayOfString" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SchedTerminalCombo" nillable="true" type="tns:SchedTerminalCombo" />
+  <xs:complexType name="ArrayOfString">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfString" nillable="true" type="tns:ArrayOfString" />
+  <xs:complexType name="ArrayOfSchedTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SchedTime" nillable="true" type="tns:SchedTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSchedTime" nillable="true" type="tns:ArrayOfSchedTime" />
+  <xs:complexType name="SchedTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DepartingTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ArrivingTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="LoadingRule" type="tns:LoadIndicator" />
+      <xs:element minOccurs="0" name="VesselID" type="xs:int" />
+      <xs:element minOccurs="0" name="VesselName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="VesselHandicapAccessible" type="xs:boolean" />
+      <xs:element minOccurs="0" name="VesselPositionNum" type="xs:int" />
+      <xs:element minOccurs="0" name="Routes" nillable="true" type="tns:ArrayOfInt" />
+      <xs:element minOccurs="0" name="AnnotationIndexes" nillable="true" type="tns:ArrayOfInt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SchedTime" nillable="true" type="tns:SchedTime" />
+  <xs:simpleType name="LoadIndicator">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Passenger">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Vehicle">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Both">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">3</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="LoadIndicator" nillable="true" type="tns:LoadIndicator" />
+</xs:schema>
