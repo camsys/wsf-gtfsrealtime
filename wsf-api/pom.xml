@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.kurtraschke</groupId>
     <artifactId>wsf-gtfsrealtime</artifactId>
-    <version>${project.version}</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>wsf-api</artifactId>
   <packaging>jar</packaging>
