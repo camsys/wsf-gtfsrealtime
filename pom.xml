@@ -15,6 +15,8 @@
     <site_url>${site_deployment_base}/wsf-gtfsrealtime/${project.version}</site_url>
     <site_base_url>http://developer.onebusaway.org/modules</site_base_url>
     <currentVersion>${project.version}</currentVersion>
+    <maven_javadoc_plugin_version>2.7</maven_javadoc_plugin_version>
+    <maven_project_info_reports_plugin_version>2.4</maven_project_info_reports_plugin_version>
   </properties>
   
   <distributionManagement>
