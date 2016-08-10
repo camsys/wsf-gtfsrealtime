@@ -29,6 +29,12 @@
     </site>
   </distributionManagement>
 
+  <scm>
+    <connection>scm:git:http://github.com/camsys/wsf-gtfsrealtime.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/camsys/wsf-gtfsrealtime.git</developerConnection>
+    <url>http://github.com/camsys/wsf-gtfsrealtime</url>
+  </scm>
+
   <repositories>
     <repository>
       <id>public.onebusaway.org</id>
