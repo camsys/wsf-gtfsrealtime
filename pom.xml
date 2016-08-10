@@ -10,6 +10,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
+    <site_id>developer.onebusaway.org</site_id>
+    <site_deployment_base>scp://developer.onebusaway.org/var/www/sites/developer/modules</site_deployment_base>
+    <site_url>${site_deployment_base}/wsf-gtfsrealtime/${project.version}</site_url>
+    <site_base_url>http://developer.onebusaway.org/modules</site_base_url>
+    <currentVersion>${project.version}</currentVersion>
   </properties>
   
   <distributionManagement>
@@ -46,5 +51,45 @@
     <module>wsf-api</module>
     <module>wsf-realtime</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>${maven_project_info_reports_plugin_version}</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${maven_javadoc_plugin_version}</version>
+            </plugin>
+          </reportPlugins>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>attach-descriptor</goal>
+            </goals>
+            <inherited>false</inherited>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <!-- In Maven 3, ssh wagon is no longer enabled by default. Since many of our internal deployments use ssh, we enable 
+      it here -->
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>1.0-beta-7</version>
+      </extension>
+    </extensions>
+  </build>
 
 </project>
