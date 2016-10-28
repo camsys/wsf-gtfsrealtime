@@ -51,7 +51,7 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>3.0</version>
+      <version>4.0</version>
     </dependency>
     <dependency>
       <groupId>org.onebusaway</groupId>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.99soft.guice</groupId>
       <artifactId>rocoto</artifactId>
-      <version>6.2</version>
+      <version>6.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
